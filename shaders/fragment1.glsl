@@ -82,31 +82,6 @@ float snoise(vec3 v) {
     m = m * m;
     return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
 }
-
-// void main() {
-//     // float n3 = snoise(vec3(vPosition.xz * 1.0, uTime * 0.01)) * 0.5;
-//     float n3 = 2.;
-//     float w = sin(vPosition.z * 1.0 - uTime * uWaveSpeed);
-
-//     float borderMask = step(w, n3 - uSpecterSize);
-//     borderMask -= step(w, n3 - (uSpecterSize + uWaveBorder));
-//     vec4 borderOut = vec4(uBorderColor * borderMask, borderMask);
-
-//     float mcMask = step(w, n3 - uSpecterSize);
-//     vec4 matCap = texture2D(uMatCap, vMatCapUV);
-//     vec4 matCapOut = vec4(matCap.rgb, mcMask);
-
-//     float opMask = 1.0 - vPosition.y;
-//     opMask *= 0.15;
-//     opMask += 0.5;
-//     vec4 opMaskOut = vec4(1.0, 1.0, 1.0, opMask);
-
-//     vec4 col = matCapOut + borderOut;
-//     col *= opMaskOut;
-
-//     gl_FragColor = vec4(col);
-// }
-
 void main() {
     float n3 = 2.;
     float w = sin(vPosition.z * uSpecterCount - uTime * uWaveSpeed);
@@ -129,47 +104,3 @@ void main() {
 
     gl_FragColor = vec4(col);
 }
-
-
-// varying vec2 vUv;
-//         varying vec3 vPosition;
-//         varying vec3 vNormal;
-//         varying vec2 vMatCapUV;
-
-//         uniform sampler2D uMatCap;
-//         uniform float uPulsePosition;
-//         uniform float uPulseWidth;
-//         uniform float uPulseSpeed;
-//         uniform vec3 uPulseColor;
-//         uniform float uPulseOpacity;
-//         uniform float uActiveVein;
-
-//         void main() {
-//             // Map pulse along UV.y (assuming veins are oriented along y in UV space)
-//             float pulse = sin((vUv.y - uPulsePosition) * 3.14159 / uPulseWidth);
-//             pulse = clamp(pulse, 0.0, 1.0);
-//             pulse = pow(pulse, 2.0); // Soften the pulse edge
-
-//             // Apply pulse only to the active vein (based on a hypothetical vein ID)
-//             float veinMask = abs(uActiveVein - vUv.x) < 0.01 ? 1.0 : 0.0;
-
-//             // Matcap base color
-//             vec4 matCap = texture2D(uMatCap, vMatCapUV);
-//             vec4 matCapOut = vec4(matCap.rgb, 1.0);
-
-//             // Pulse color and opacity
-//             vec4 pulseOut = vec4(uPulseColor * pulse * veinMask, pulse * uPulseOpacity * veinMask);
-
-//             // Combine matcap and pulse
-//             vec4 col = matCapOut + pulseOut;
-
-//             // Apply overall opacity based on y-position
-//             float opMask = 1.0 - vPosition.y;
-//             opMask *= 0.15;
-//             opMask += 0.5;
-//             vec4 opMaskOut = vec4(1.0, 1.0, 1.0, opMask);
-
-//             col *= opMaskOut;
-
-//             gl_FragColor = col;
-//         }
