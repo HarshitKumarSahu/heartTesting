@@ -104,34 +104,3 @@ void main() {
     vec4 modelViewPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * modelViewPosition;
 }
-
-
-
-
-// varying vec2 vUv;
-//         varying vec3 vNormal;
-//         varying vec3 vPosition;
-//         varying vec2 vMatCapUV;
-//         uniform float uTime;
-
-//         #include <morphtarget_pars_vertex>
-
-//         void main() {
-//             vUv = uv;
-//             vNormal = normal;
-//             vPosition = position;
-
-//             vec3 transformed = vec3(position);
-//             #include <morphtarget_vertex>
-
-//             vec4 p = vec4(transformed, 1.0);
-//             vec3 e = normalize(vec3(modelViewMatrix * p));
-//             vec3 n = normalize(normalMatrix * normal);
-
-//             vec3 r = reflect(e, n);
-//             float m = 2.0 * sqrt(pow(r.x, 2.0) + pow(r.y, 2.0) + pow(r.z + 1.0, 2.0));
-//             vMatCapUV = r.xy / m + 0.5;
-
-//             vec4 modelViewPosition = modelViewMatrix * vec4(transformed, 1.0);
-//             gl_Position = projectionMatrix * modelViewPosition;
-//         }
