@@ -23,6 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-/src/testing/test.js 
-/src/testing/test2.js
-/src/testing/main.js
+/src/testing
+/src/testing

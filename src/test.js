@@ -1,316 +1,17 @@
-// import * as THREE from "three";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-// import fragment from "../shaders/fragment.glsl";
-// import vertex from "../shaders/vertex.glsl";
-// import * as dat from "dat.gui";
-// import gsap from "gsap";
-// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-
-// class Sketch {
-//     constructor(options) {
-//         this.scene = new THREE.Scene();
-
-//         this.container = options.dom;
-//         this.width = this.container.offsetWidth;
-//         this.height = this.container.offsetHeight;
-
-//         this.renderer = new THREE.WebGLRenderer({
-//             alpha: true,
-//             antialias: true,
-//         });
-//         this.renderer.setPixelRatio(window.devicePixelRatio);
-//         this.renderer.setSize(this.width, this.height);
-//         this.renderer.setClearColor("#111", 1);
-//         this.renderer.physicallyCorrectLights = true;
-//         this.renderer.outputEncoding = THREE.sRGBEncoding;
-
-//         console.log("WebGL Capabilities:", this.renderer.capabilities);
-
-//         this.container.appendChild(this.renderer.domElement);
-
-//         this.camera = new THREE.PerspectiveCamera(
-//             70,
-//             this.width / this.height,
-//             0.001,
-//             1000
-//         );
-//         this.camera.position.set(0, 0, 2);
-//         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-//         this.time = 0;
-//         this.isPlaying = true;
-//         this.mouse = 0;
-//         this.clock = new THREE.Clock();
-
-//         this.light()
-//         this.material()
-//         this.addModel();
-//         this.resize();
-//         this.setupResize();
-//         this.settings();
-//         this.render();
-//     }
-
-//     light() {
-//         const light = new THREE.AmbientLight( 0x404040 ); // soft white light
-//         this.scene.add( light );  
-        
-//         const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-//         this.scene.add( directionalLight );
-//     }
-
-//     // addModel() {
-//     //     this.loader = new GLTFLoader();
-//     //     this.dracoLoader = new DRACOLoader();
-//     //     this.dracoLoader.setDecoderPath('./draco/');
-//     //     this.loader.setDRACOLoader(this.dracoLoader);
-
-//     //     let that = this;
-//     //     this.loader.load(
-//     //         "/model/heart.glb",
-//     //         function(gltf) {
-//     //             that.model = gltf.scene;
-//     //             that.meshes = [];
-
-//     //             console.log("GLTF Animations:", gltf.animations);
-//     //             gltf.animations.forEach((clip, index) => {
-//     //                 console.log(`Animation ${index} Tracks:`, clip.tracks);
-//     //             });
-
-//     //             gltf.scene.traverse(function (child) {
-//     //                 if (child.isMesh) {
-//     //                     child.userData.originalMaterial = child.material;
-
-//     //                     const box = new THREE.Box3().setFromObject(child);
-//     //                     const center = box.getCenter(new THREE.Vector3());
-
-//     //                     child.position.sub(center);
-//     //                     child.position.x = 0.25;
-
-//     //                     child.scale.set(0.575, 0.575, 0.575);
-
-//     //                     child.material = that.material;
-//     //                     // child.material = new THREE.MeshStandardMaterial()
-
-//     //                     that.meshes.push(child);
-
-//     //                     console.log("Mesh:", child.name, "Material:", child.material);
-//     //                     if (child.skeleton) {
-//     //                         console.log("Mesh Skeleton:", child.skeleton);
-//     //                     }
-//     //                 }
-//     //             });
-
-//     //             that.mixer = null;
-//     //             if (gltf.animations && gltf.animations.length > 0) {
-//     //                 that.mixer = new THREE.AnimationMixer(gltf.scene);
-//     //                 gltf.animations.forEach((clip, index) => {
-//     //                     console.log(`Playing animation ${index}: ${clip.name}`);
-//     //                     const action = that.mixer.clipAction(clip);
-//     //                     action.setLoop(THREE.LoopRepeat);
-//     //                     action.timeScale = that.settings.animationSpeed;
-//     //                     action.play();
-//     //                 });
-//     //             } else {
-//     //                 console.warn("No animations found in the model.");
-//     //             }
-
-//     //             that.scene.add(gltf.scene);
-//     //         },
-//     //         undefined,
-//     //         function(e) {
-//     //             console.error("Model loading error:", e);
-//     //         }
-//     //     );
-//     // }
-
-//     addModel() {
-//         this.loader = new GLTFLoader();
-//         this.dracoLoader = new DRACOLoader();
-//         this.dracoLoader.setDecoderPath('./draco/');
-//         this.loader.setDRACOLoader(this.dracoLoader);
-    
-//         let that = this;
-//         this.loader.load(
-//             "/model/heart.glb",
-//             function(gltf) {
-//                 that.model = gltf.scene;
-//                 that.meshes = [];
-    
-//                 console.log("GLTF Animations:", gltf.animations);
-//                 gltf.animations.forEach((clip, index) => {
-//                     console.log(`Animation ${index} Tracks:`, clip.tracks);
-//                     console.log(`Animation ${index} targets:`, clip.tracks.map(track => track.name));
-//                 });
-    
-//                 gltf.scene.traverse(function (child) {
-//                     if (child.isMesh) {
-//                         child.userData.originalMaterial = child.material;
-    
-//                         const box = new THREE.Box3().setFromObject(child);
-//                         const center = box.getCenter(new THREE.Vector3());
-    
-//                         child.position.sub(center);
-//                         child.position.x = 0.25;
-    
-//                         child.scale.set(0.575, 0.575, 0.575);
-    
-//                         child.material = that.material;
-    
-//                         that.meshes.push(child);
-    
-//                         console.log("Mesh:", child.name, "Material:", child.material.name);
-//                         console.log("Mesh has skeleton:", !!child.skeleton, "Skeleton:", child.skeleton);
-//                         console.log("Mesh has morph targets:", !!child.morphTargetInfluences, "Morph targets:", child.morphTargetInfluences);
-//                         console.log("Geometry attributes:", Object.keys(child.geometry.attributes));
-//                     }
-//                 });
-    
-//                 that.mixer = null;
-//                 if (gltf.animations && gltf.animations.length > 0) {
-//                     that.mixer = new THREE.AnimationMixer(gltf.scene);
-//                     gltf.animations.forEach((clip, index) => {
-//                         console.log(`Playing animation ${index}: ${clip.name}`);
-//                         const action = that.mixer.clipAction(clip);
-//                         action.setLoop(THREE.LoopRepeat);
-//                         action.timeScale = that.settings.animationSpeed;
-//                         action.play();
-//                     });
-//                 } else {
-//                     console.warn("No animations found in the model.");
-//                 }
-    
-//                 that.scene.add(gltf.scene);
-//             },
-//             undefined,
-//             function(e) {
-//                 console.error("Model loading error:", e);
-//             }
-//         );
-//     }
-
-//     material() {
-//         this.material = new THREE.ShaderMaterial({
-//             side: THREE.DoubleSide,
-//             uniforms: {
-//                 time: { value: 0 },
-//                 mouse: { value: 0 },
-//                 resolution: { value: new THREE.Vector4(this.width, this.height, this.width / this.height, 1) },
-//                 uvRate1: { value: new THREE.Vector2(1, 1) },
-//             },
-//             vertexShader: vertex,
-//             fragmentShader: fragment,
-//             morphTargets: true, // Support morph targets
-//             morphNormals: true, // Support morph normals
-//             skinning: true, // Support skinning
-//             // wireframe: true
-//         });
-//     }
-
-//     settings() {
-//         this.settings = {
-//             test: 1,
-//             useShaderMaterial: true,
-//             animationSpeed: 1.0,
-//         };
-//         this.gui = new dat.GUI();
-//         this.gui.add(this.settings, "test", 0, 1, 0.01);
-//         this.gui.add(this.settings, "useShaderMaterial").name("Use Shader Material").onChange((value) => {
-//             if (this.meshes) {
-//                 this.meshes.forEach((mesh) => {
-//                     mesh.material = value ? this.material : mesh.userData.originalMaterial || new THREE.MeshStandardMaterial();
-//                 });
-//             }
-//             this.plane.material = value ? this.material : new THREE.MeshStandardMaterial();
-//         });
-//         this.gui.add(this.settings, "animationSpeed", 0, 5, 0.1).name("Animation Speed").onChange((value) => {
-//             if (this.mixer) {
-//                 this.mixer.timeScale = value;
-//             }
-//         });
-//     }
-
-//     setupResize() {
-//         window.addEventListener("resize", this.resize.bind(this));
-//     }
-
-//     resize() {
-//         this.width = this.container.offsetWidth;
-//         this.height = this.container.offsetHeight;
-//         this.renderer.setSize(this.width, this.height);
-//         this.material.uniforms.resolution.value.set(this.width, this.height, this.width / this.height, 1);
-//         this.camera.aspect = this.width / this.height;
-//         this.camera.updateProjectionMatrix();
-//     }
-
-//     stop() {
-//         this.isPlaying = false;
-//     }
-
-//     play() {
-//         if (!this.isPlaying) {
-//             this.isPlaying = true;
-//             this.render();
-//         }
-//     }
-
-//     // render() {
-//     //     if (!this.isPlaying) return;
-//     //     const delta = this.clock.getDelta();
-//     //     this.time += delta;
-
-//     //     this.material.uniforms.time.value = this.time;
-
-//     //     if (this.mixer) {
-//     //         this.mixer.update(delta);
-//     //         console.log("Mixer time:", this.mixer.time);
-//     //     }
-
-//     //     this.renderer.render(this.scene, this.camera);
-//     //     requestAnimationFrame(this.render.bind(this));
-//     // }
-//     render() {
-//         if (!this.isPlaying) return;
-//         const delta = this.clock.getDelta();
-//         this.time += delta;
-    
-//         this.material.uniforms.time.value = this.time;
-    
-//         if (this.mixer) {
-//             this.mixer.update(delta);
-//             console.log("Mixer time:", this.mixer.time);
-//             // Debug bone transformations
-//             if (this.model && this.model.skeleton) {
-//                 this.model.skeleton.bones.forEach((bone, index) => {
-//                     console.log(`Bone ${index} position:`, bone.position);
-//                 });
-//             }
-//         }
-    
-//         this.renderer.render(this.scene, this.camera);
-//         requestAnimationFrame(this.render.bind(this));
-//     }
-// }
-
-// new Sketch({
-//     dom: document.querySelector(".canvas"),
-// });
-
-
-
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import * as dat from "dat.gui";
-import { Pane } from "tweakpane";
-import vertex from "../shaders/vertex.glsl";
-import fragment from "../shaders/fragment.glsl";
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 class Sketch {
     constructor(options) {
         this.scene = new THREE.Scene();
+
         this.container = options.dom;
         this.width = this.container.offsetWidth;
         this.height = this.container.offsetHeight;
@@ -325,246 +26,356 @@ class Sketch {
         this.renderer.physicallyCorrectLights = true;
         this.renderer.outputEncoding = THREE.sRGBEncoding;
 
+        console.log("WebGL Capabilities:", this.renderer.capabilities);
+
         this.container.appendChild(this.renderer.domElement);
 
         this.camera = new THREE.PerspectiveCamera(
             70,
             this.width / this.height,
-            0.1,
-            100
+            0.001,
+            1000
         );
-        this.camera.position.set(0, 0, 2);
+        this.camera.position.set(0, 0, 4);
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
         this.time = 0;
         this.isPlaying = true;
         this.clock = new THREE.Clock();
+        this.allVeins = Array.from({ length: 10 }, (_, i) => i + 1); // Veins 1-10
+        this.activeVeins = [];
+        this.staggerDelays = [];
+        this.groupStart = 0;
+        this.veinList = [];
 
-        this.textureLoader = new THREE.TextureLoader();
-        this.uniforms = {
-            uTime: { value: 0 },
-            uMatCap: { value: this.textureLoader.load("../public/textures/black.png") },
-            uSpecterSize: { value: 0.8 },
-            uWaveBorder: { value: 0.3 },
-            uWaveSpeed: { value: 2.0 },
-            uBorderColor: { value: new THREE.Color("#87DCE1") },
-            resolution: { value: new THREE.Vector4(this.width, this.height, this.width / this.height, 1) },
-        };
-
-        this.lights();
+        this.settings();
         this.material();
+        this.setupPostProcessing();
+        this.light();
         this.addModel();
+        this.resize();
         this.setupResize();
-        this.setupControls();
-        this.render();
     }
 
-    lights() {
-        const ambientLight = new THREE.AmbientLight(0x404040);
-        this.scene.add(ambientLight);
+    settings() {
+        this.settings = {
+            test: 1,
+            useShaderMaterial: true,
+            animationSpeed: 1.0,
+            pulseSpeed: 0.25,
+            waveWidth: 0.075,
+            minActiveVeins: 2,
+            maxActiveVeins: 3,
+            whichUV: 0,
+            reverseDirection: true,
+            pulseDelay: 0.025,
+            groupStagger: 0.125,
+            glowStrength: 1.0,
+            pulseColor: "#0e5d66",
+            debugUV: false,
+            easingType: "linear",
+            bloomThreshold: 0.085,
+            bloomStrength: 1.75,
+            bloomRadius: 0.25,
+            fresnelStrength: 5, // Fresnel effect strength
+            fresnelPower: 5,   // Fresnel power for edge sharpness
+        };
+        this.gui = new dat.GUI();
+        this.gui.add(this.settings, "test", 0, 1, 0.01);
+        this.gui.add(this.settings, "useShaderMaterial").name("Use Shader Material").onChange((value) => {
+            if (this.heart) {
+                this.heart.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material = value ? this.material : this.heart.userData.originalMaterial;
+                    }
+                });
+            }
+        });
+        this.gui.add(this.settings, "animationSpeed", 0, 5, 0.1).name("Animation Speed");
+        this.gui.add(this.settings, "pulseSpeed", 0, 10, 0.1).name("Pulse Speed").onChange((value) => {
+            this.material.uniforms.speed.value = value;
+        });
+        this.gui.add(this.settings, "waveWidth", 0, 0.5, 0.01).name("Pulse Width").onChange((value) => {
+            this.material.uniforms.waveWidth.value = value;
+        });
+        this.gui.add(this.settings, "minActiveVeins", 1, 5, 1).name("Min Active Veins");
+        this.gui.add(this.settings, "maxActiveVeins", 1, 10, 1).name("Max Active Veins");
+        this.gui.add(this.settings, "whichUV", 0, 1, 1).name("Which UV (0:x,1:y)").onChange((value) => {
+            this.material.uniforms.whichUV.value = value;
+        });
+        this.gui.add(this.settings, "reverseDirection").name("Reverse Direction").onChange((value) => {
+            this.material.uniforms.reverseDirection.value = value ? 1.0 : 0.0;
+        });
+        this.gui.add(this.settings, "pulseDelay", 0, 5, 0.1).name("Group Delay");
+        this.gui.add(this.settings, "groupStagger", 0, 1, 0.05).name("Group Stagger");
+        this.gui.add(this.settings, "glowStrength", 0, 10, 0.1).name("Glow Strength").onChange((value) => {
+            this.material.uniforms.glowStrength.value = value;
+        });
+        this.gui.addColor(this.settings, "pulseColor").name("Pulse Color").onChange((value) => {
+            this.material.uniforms.pulseColor.value.set(value);
+        });
+        this.gui.add(this.settings, "debugUV").name("Debug UV Map").onChange((value) => {
+            this.material.uniforms.debugUV.value = value ? 1.0 : 0.0;
+        });
+        this.gui.add(this.settings, "easingType", ["linear", "easeInQuad", "easeOutQuad", "easeInOutQuad"]).name("Easing Type");
+        this.gui.add(this.settings, "bloomThreshold", 0, 1, 0.01).name("Bloom Threshold").onChange((value) => {
+            this.bloomPass.threshold = value;
+        });
+        this.gui.add(this.settings, "bloomStrength", 0, 3, 0.1).name("Bloom Strength").onChange((value) => {
+            this.bloomPass.strength = value;
+        });
+        this.gui.add(this.settings, "bloomRadius", 0, 1, 0.01).name("Bloom Radius").onChange((value) => {
+            this.bloomPass.radius = value;
+        });
+        this.gui.add(this.settings, "fresnelStrength", -1, 10, 1).name("Fresnel Strength").onChange((value) => {
+            this.material.uniforms.fresnelStrength.value = value;
+        });
+        this.gui.add(this.settings, "fresnelPower", -1, 10, 0.01).name("Fresnel Power").onChange((value) => {
+            this.material.uniforms.fresnelPower.value = value;
+        });
+    }
+
+    setupPostProcessing() {
+        const renderScene = new RenderPass(this.scene, this.camera);
+
+        this.bloomPass = new UnrealBloomPass(new THREE.Vector2(this.width, this.height), this.settings.bloomStrength, this.settings.bloomRadius, this.settings.bloomThreshold);
+
+        this.bloomComposer = new EffectComposer(this.renderer);
+        this.bloomComposer.renderToScreen = false;
+        this.bloomComposer.addPass(renderScene);
+        this.bloomComposer.addPass(this.bloomPass);
+
+        const finalPass = new ShaderPass(
+            new THREE.ShaderMaterial({
+                uniforms: {
+                    baseTexture: { value: null },
+                    bloomTexture: { value: this.bloomComposer.renderTarget2.texture }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform sampler2D baseTexture;
+                    uniform sampler2D bloomTexture;
+                    varying vec2 vUv;
+                    void main() {
+                        gl_FragColor = texture2D(baseTexture, vUv) + texture2D(bloomTexture, vUv);
+                    }
+                `,
+                defines: {}
+            }), 'baseTexture'
+        );
+        finalPass.needsSwap = true;
+
+        this.finalComposer = new EffectComposer(this.renderer);
+        this.finalComposer.addPass(renderScene);
+        this.finalComposer.addPass(finalPass);
+    }
+
+    light() {
+        const light = new THREE.AmbientLight(0x404040);
+        this.scene.add(light);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
         this.scene.add(directionalLight);
+    }
+
+    addModel() {
+        const loader = new GLTFLoader();
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('./draco/');
+        loader.setDRACOLoader(dracoLoader);
+
+        loader.load(
+            '/model/today2.glb', 
+            // '/model/heartokay.glb', 
+            (gltf) => {
+            this.heart = gltf.scene; // Use the entire scene
+            this.scene.add(this.heart);
+
+            // Store the original material of the first mesh as a reference
+            this.heart.traverse((child) => {
+                if (child.isMesh) {
+                    this.heart.userData.originalMaterial = child.material.clone();
+                    console.log("Original material:", this.heart.userData.originalMaterial);
+                    return; // Stop after finding the first mesh
+                }
+            });
+            if (!this.heart.userData.originalMaterial) {
+                console.log("No valid MeshStandardMaterial found, using fallback.");
+                this.heart.userData.originalMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
+            }
+
+            // Apply shader material to all meshes in the scene with vein ID fallback
+            this.heart.traverse((child) => {
+                if (child.isMesh && child.geometry.attributes && child.geometry.attributes._attribute_veinid) {
+                    const veinIdAttr = child.geometry.attributes._attribute_veinid;
+                    console.log('veinID values:', veinIdAttr.array);
+                    child.geometry.setAttribute('_attribute_veinid', veinIdAttr);
+                    child.material = this.material;
+                    child.material.needsUpdate = true;
+
+                    // Fallback: Assign random vein IDs if all are zero
+                    const veinIds = veinIdAttr.array;
+                    let hasNonZero = false;
+                    for (let i = 0; i < veinIds.length; i++) {
+                        if (veinIds[i] > 0) {
+                            hasNonZero = true;
+                            break;
+                        }
+                    }
+                    if (!hasNonZero && veinIds.length > 0) {
+                        for (let i = 0; i < veinIds.length; i += Math.floor(veinIds.length / 10)) {
+                            veinIds[i] = Math.floor(Math.random() * 10) + 1; // Assign random vein IDs (1-10)
+                        }
+                        child.geometry.attributes._attribute_veinid.needsUpdate = true;
+                        console.log(`Fallback veinIDs assigned for ${child.name}:`, veinIds);
+                    }
+                }
+            });
+
+            this.selectNewGroup();
+            this.render(); // Start render loop after model is loaded
+        }, undefined, (error) => {
+            console.error('Error loading model:', error);
+        });
     }
 
     material() {
         this.material = new THREE.ShaderMaterial({
             side: THREE.DoubleSide,
-            uniforms: this.uniforms,
-            vertexShader: vertex,
-            fragmentShader: fragment,
-            transparent: true,
-            morphTargets: true, // Support morph targets
-        });
-    }
-
-    addModel() {
-        this.loader = new GLTFLoader();
-        this.dracoLoader = new DRACOLoader();
-        this.dracoLoader.setDecoderPath("./draco/");
-        this.loader.setDRACOLoader(this.dracoLoader);
-
-        this.loader.load(
-            "/model/heart.glb",
-            (gltf) => {
-                this.model = gltf.scene;
-                this.meshes = [];
-
-                gltf.scene.traverse((child) => {
-                    if (child.isMesh) {
-                        child.userData.originalMaterial = child.material;
-                        const box = new THREE.Box3().setFromObject(child);
-                        const center = box.getCenter(new THREE.Vector3());
-                        child.position.sub(center);
-                        child.position.x = 0.25;
-                        child.scale.set(0.575, 0.575, 0.575);
-                        child.material = this.material;
-                        this.meshes.push(child);
-
-                        console.log("Mesh:", child.name, "Material:", child.material.name);
-                        console.log("Mesh has morph targets:", !!child.morphTargetInfluences);
-                    }
-                });
-
-                this.mixer = null;
-                if (gltf.animations && gltf.animations.length > 0) {
-                    this.mixer = new THREE.AnimationMixer(gltf.scene);
-                    gltf.animations.forEach((clip) => {
-                        console.log(`Playing animation: ${clip.name}`);
-                        const action = this.mixer.clipAction(clip);
-                        action.setLoop(THREE.LoopRepeat);
-                        action.timeScale = this.settings.animationSpeed;
-                        action.play();
-                    });
-                } else {
-                    console.warn("No animations found in the model.");
-                }
-
-                this.scene.add(gltf.scene);
+            uniforms: {
+                speed: { value: this.settings.pulseSpeed },
+                waveWidth: { value: this.settings.waveWidth },
+                whichUV: { value: this.settings.whichUV },
+                reverseDirection: { value: this.settings.reverseDirection ? 1.0 : 0.0 },
+                glowStrength: { value: this.settings.glowStrength },
+                pulseColor: { value: new THREE.Color(this.settings.pulseColor) },
+                debugUV: { value: this.settings.debugUV ? 1.0 : 0.0 },
+                currentVeins: { value: new Array(10).fill(-1.0) },
+                progresses: { value: new Array(10).fill(0.0) },
+                numActive: { value: 0 },
+                isGlowPass: { value: 0.0 },
+                fresnelStrength: { value: this.settings.fresnelStrength },
+                fresnelPower: { value: this.settings.fresnelPower },
+                viewVector: { value: new THREE.Vector3() },
             },
-            undefined,
-            (e) => {
-                console.error("Model loading error:", e);
-            }
-        );
+            vertexShader: `
+                attribute float _attribute_veinid;
+                varying float vVeinID;
+                varying vec2 vUv;
+                varying vec3 vViewPosition;
+                void main() {
+                    vUv = uv;
+                    vVeinID =_attribute_veinid;
+                    vViewPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying float vVeinID;
+                varying vec2 vUv;
+                varying vec3 vViewPosition;
+                uniform float waveWidth;
+                uniform float reverseDirection;
+                uniform int whichUV;
+                uniform float glowStrength;
+                uniform vec3 pulseColor;
+                uniform float debugUV;
+                uniform float currentVeins[10];
+                uniform float progresses[10];
+                uniform int numActive;
+                uniform float isGlowPass;
+                uniform float fresnelStrength;
+                uniform float fresnelPower;
+                uniform vec3 viewVector;
+
+                #define S(a, b, c) smoothstep(a, b, c)
+
+                void main() {
+                    if (debugUV > 0.5) {
+                        gl_FragColor = vec4(vUv.x, vUv.y, 0.0, 1.0);
+                        return;
+                    }
+
+                    // Black base color
+                    vec3 baseColor = vec3(0.0, 0.0, 0.0);
+
+                    // Fresnel effect
+                    vec3 normal = normalize(cross(dFdx(vViewPosition), dFdy(vViewPosition)));
+                    vec3 viewDir = normalize(-vViewPosition);
+                    float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), fresnelPower) * fresnelStrength;
+
+                    // Darken veins slightly for contrast
+                    if (vVeinID > 0.5) {
+                        baseColor *= 0.6;
+                    }
+
+                    float coord = (whichUV == 0) ? vUv.x : vUv.y;
+                    if (reverseDirection > 0.5) coord = 1.0 - coord;
+
+                    float f = 0.0;
+                    for (int i = 0; i < 9; i++) {
+                        if (i >= numActive) break;
+                        if (abs(vVeinID - currentVeins[i]) < 0.01) {
+                            float normAt = progresses[i];
+                            float hWidth = waveWidth * 0.5;
+                            float fw = fwidth(coord);
+                            f = S(hWidth + fw, hWidth, abs(coord - normAt));
+                            break;
+                        }
+                    }
+
+                    vec3 glow = pulseColor * f * glowStrength;
+
+                    if (isGlowPass > 0.5) {
+                        gl_FragColor = vec4(glow + fresnel * pulseColor, 1.0);
+                    } else {
+                        gl_FragColor = vec4(baseColor + glow + fresnel * pulseColor, 1.0);
+                    }
+                }
+            `,
+        });
     }
 
-    // addModel() {
-    //             this.loader = new GLTFLoader();
-    //             this.dracoLoader = new DRACOLoader();
-    //             this.dracoLoader.setDecoderPath('./draco/');
-    //             this.loader.setDRACOLoader(this.dracoLoader);
-            
-    //             let that = this;
-    //             this.loader.load(
-    //                 "/model/heart.glb",
-    //                 function(gltf) {
-    //                     that.model = gltf.scene;
-    //                     that.meshes = [];
-            
-    //                     console.log("GLTF Animations:", gltf.animations);
-    //                     gltf.animations.forEach((clip, index) => {
-    //                         console.log(`Animation ${index} Tracks:`, clip.tracks);
-    //                         console.log(`Animation ${index} targets:`, clip.tracks.map(track => track.name));
-    //                     });
-            
-    //                     gltf.scene.traverse(function (child) {
-    //                         if (child.isMesh) {
-    //                             child.userData.originalMaterial = child.material;
-            
-    //                             const box = new THREE.Box3().setFromObject(child);
-    //                             const center = box.getCenter(new THREE.Vector3());
-            
-    //                             child.position.sub(center);
-    //                             child.position.x = 0.15;
-            
-    //                             child.scale.set(0.575, 0.575, 0.575);
-            
-    //                             child.material = that.material;
-            
-    //                             that.meshes.push(child);
-            
-    //                             console.log("Mesh:", child.name, "Material:", child.material.name);
-    //                             console.log("Mesh has skeleton:", !!child.skeleton, "Skeleton:", child.skeleton);
-    //                             console.log("Mesh has morph targets:", !!child.morphTargetInfluences, "Morph targets:", child.morphTargetInfluences);
-    //                             console.log("Geometry attributes:", Object.keys(child.geometry.attributes));
-    //                         }
-    //                     });
-            
-    //                     that.mixer = null;
-    //                     if (gltf.animations && gltf.animations.length > 0) {
-    //                         that.mixer = new THREE.AnimationMixer(gltf.scene);
-    //                         gltf.animations.forEach((clip, index) => {
-    //                             console.log(`Playing animation ${index}: ${clip.name}`);
-    //                             const action = that.mixer.clipAction(clip);
-    //                             action.setLoop(THREE.LoopRepeat);
-    //                             action.timeScale = that.settings.animationSpeed;
-    //                             action.play();
-    //                         });
-    //                     } else {
-    //                         console.warn("No animations found in the model.");
-    //                     }
-            
-    //                     that.scene.add(gltf.scene);
-    //                 },
-    //                 undefined,
-    //                 function(e) {
-    //                     console.error("Model loading error:", e);
-    //                 }
-    //             );
-    //         }
+    selectNewGroup() {
+        if (this.veinList.length < this.settings.maxActiveVeins) {
+            this.veinList = [...this.allVeins].sort(() => Math.random() - 0.5);
+        }
 
-    setupControls() {
-        this.settings = {
-            animationSpeed: 1.0,
-            useShaderMaterial: true,
-        };
+        const num = Math.floor(Math.random() * (this.settings.maxActiveVeins - this.settings.minActiveVeins + 1)) + this.settings.minActiveVeins;
 
-        // dat.GUI
-        this.gui = new dat.GUI();
-        this.gui.add(this.settings, "animationSpeed", 0, 5, 0.1).name("Animation Speed").onChange((value) => {
-            if (this.mixer) {
-                this.mixer.timeScale = value;
-            }
-        });
-        this.gui.add(this.settings, "useShaderMaterial").name("Use Shader Material").onChange((value) => {
-            if (this.meshes) {
-                this.meshes.forEach((mesh) => {
-                    mesh.material = value ? this.material : mesh.userData.originalMaterial || new THREE.MeshStandardMaterial();
-                });
-            }
-        });
+        this.activeVeins = this.veinList.splice(0, num);
+        this.staggerDelays = Array.from({ length: num }, (_, i) => i * this.settings.groupStagger);
 
-        // Tweakpane
-        this.pane = new Pane({ title: "Spectrum Customization", expanded: true });
-        const folder = this.pane.addFolder({ title: "Spectrum Settings", expanded: true });
-        folder.addBinding(this.uniforms.uSpecterSize, "value", {
-            min: -1,
-            max: 1,
-            label: "Spectrum Size",
-        });
-        folder.addBinding(this.uniforms.uWaveBorder, "value", {
-            min: 0,
-            max: 1,
-            label: "Border Size",
-        });
-        folder.addBinding(this.uniforms.uWaveSpeed, "value", {
-            min: 0,
-            max: 5,
-            label: "Wave Speed",
-        });
-        const colorSettings = { lightness: 80 };
-        const updateBorderColor = () => {
-            this.uniforms.uBorderColor.value.set(`hsl(287, 80%, ${colorSettings.lightness}%)`);
-        };
-        folder.addBinding(colorSettings, "lightness", {
-            min: 5,
-            max: 100,
-            step: 1,
+        // Use the user-defined pulseColor without randomization
+        this.material.uniforms.pulseColor.value.set(this.settings.pulseColor);
 
-            label: "Color Brightness",
-        }).on("change", updateBorderColor);
+        const currentVeinsArray = this.material.uniforms.currentVeins.value;
+        for (let i = 0; i < 10; i++) {
+            currentVeinsArray[i] = i < num ? this.activeVeins[i] : -1.0;
+        }
+        this.material.uniforms.numActive.value = num;
 
-        // Adjust Tweakpane for mobile
-        const adjustPaneWidth = () => {
-            const paneElement = document.querySelector(".tp-dfwv");
-            if (paneElement) {
-                if (window.innerWidth < 600) {
-                    paneElement.style.width = "62vw";
-                    paneElement.style.top = "auto";
-                    paneElement.style.right = "auto";
-                    paneElement.style.bottom = "1rem";
-                    paneElement.style.left = "1rem";
-                    paneElement.style.fontSize = "0.75rem";
-                    paneElement.classList.add("bottom-to-top");
-                } else {
-                    paneElement.style.top = "1rem";
-                    paneElement.style.right = "1rem";
-                    paneElement.classList.remove("bottom-to-top");
-                }
-            }
-        };
-        adjustPaneWidth();
-        window.addEventListener("resize", adjustPaneWidth);
+        this.groupStart = this.time;
+
+        console.log("New group started with veins:", this.activeVeins);
+    }
+
+    ease(progress, type) {
+        switch (type) {
+            case "easeInQuad":
+                return progress * progress;
+            case "easeOutQuad":
+                return progress * (2 - progress);
+            case "easeInOutQuad":
+                return progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+            default:
+                return progress;
+        }
     }
 
     setupResize() {
@@ -575,23 +386,66 @@ class Sketch {
         this.width = this.container.offsetWidth;
         this.height = this.container.offsetHeight;
         this.renderer.setSize(this.width, this.height);
-        this.uniforms.resolution.value.set(this.width, this.height, this.width / this.height, 1);
+        this.bloomComposer.setSize(this.width, this.height);
+        this.finalComposer.setSize(this.width, this.height);
         this.camera.aspect = this.width / this.height;
         this.camera.updateProjectionMatrix();
     }
 
-    render() {
-        if (!this.isPlaying) return;
-        const delta = this.clock.getDelta();
-        this.time += delta;
-        this.uniforms.uTime.value = this.time;
+    stop() {
+        this.isPlaying = false;
+    }
 
-        if (this.mixer) {
-            this.mixer.update(delta);
+    play() {
+        if (!this.isPlaying) {
+            this.isPlaying = true;
+            this.render();
+        }
+    }
+
+    render() {
+        if (!this.isPlaying || !this.heart) return;
+        const delta = this.clock.getDelta();
+        this.time += delta * this.settings.animationSpeed;
+
+        const speed = this.material.uniforms.speed.value;
+        let maxRawProgress = 0;
+
+        if (this.activeVeins.length > 0) {
+            for (let i = 0; i < this.activeVeins.length; i++) {
+                const delay = this.staggerDelays[i];
+                const rawProgress = (this.time - this.groupStart - delay) * speed;
+                maxRawProgress = Math.max(maxRawProgress, rawProgress);
+                const clamped = Math.min(Math.max(rawProgress, 0), 1);
+                const eased = this.ease(clamped, this.settings.easingType);
+                this.material.uniforms.progresses.value[i] = eased;
+            }
+
+            if (maxRawProgress > 1.0 + this.settings.pulseDelay) {
+                this.activeVeins = [];
+                this.staggerDelays = [];
+                this.material.uniforms.numActive.value = 0;
+                this.selectNewGroup();
+            }
         }
 
-        // this.scene.rotateY(0.0015); // Optional: add slight rotation like spectrum
-        this.renderer.render(this.scene, this.camera);
+        // Update view vector for Fresnel using camera position relative to heart
+        if (this.heart && this.heart.position) {
+            this.material.uniforms.viewVector.value.copy(
+                this.camera.position.clone().sub(this.heart.position).normalize()
+            );
+        } else {
+            this.material.uniforms.viewVector.value.copy(this.camera.position.clone().normalize());
+        }
+
+        // Render bloom pass with glow only
+        this.material.uniforms.isGlowPass.value = 1.0;
+        this.bloomComposer.render();
+
+        // Render final with normal + bloom
+        this.material.uniforms.isGlowPass.value = 0.0;
+        this.finalComposer.render();
+
         requestAnimationFrame(this.render.bind(this));
     }
 }
@@ -599,516 +453,3 @@ class Sketch {
 new Sketch({
     dom: document.querySelector(".canvas"),
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import * as THREE from "three";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-// import fragment from "../shaders/fragment.glsl";
-// import vertex from "../shaders/vertex.glsl";
-// import * as dat from "dat.gui";
-// import gsap from "gsap";
-// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-
-// class Sketch {
-//     constructor(options) {
-//         this.scene = new THREE.Scene();
-
-//         this.container = options.dom;
-//         this.width = this.container.offsetWidth;
-//         this.height = this.container.offsetHeight;
-
-//         this.renderer = new THREE.WebGLRenderer({
-//             alpha: true,
-//             antialias: true,
-//         });
-//         this.renderer.setPixelRatio(window.devicePixelRatio);
-//         this.renderer.setSize(this.width, this.height);
-//         this.renderer.setClearColor("#111", 1);
-//         this.renderer.physicallyCorrectLights = true;
-//         this.renderer.outputEncoding = THREE.sRGBEncoding;
-
-//         console.log("WebGL Capabilities:", this.renderer.capabilities);
-
-//         this.container.appendChild(this.renderer.domElement);
-
-//         this.camera = new THREE.PerspectiveCamera(
-//             70,
-//             this.width / this.height,
-//             0.001,
-//             1000
-//         );
-//         this.camera.position.set(0, 0, 2);
-//         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-//         this.time = 0;
-//         this.isPlaying = true;
-//         this.mouse = 0;
-//         this.clock = new THREE.Clock();
-
-//         this.settings();
-//         this.material();
-//         this.light();
-//         this.addModel();
-//         this.resize();
-//         this.setupResize();
-//         this.render();
-//     }
-
-//     settings() {
-//         this.settings = {
-//             test: 1,
-//             useShaderMaterial: true,
-//             animationSpeed: 1.0,
-//             pulseSpeed: 1.0,
-//             waveWidth: 0.05,
-//             numVeins: 5,
-//             whichUV: 0,
-//             invertAlong: false,
-//             pulseDelay: 0.5,
-//             glowStrength: 1.0,
-//         };
-//         this.gui = new dat.GUI();
-//         this.gui.add(this.settings, "test", 0, 1, 0.01);
-//         this.gui.add(this.settings, "useShaderMaterial").name("Use Shader Material").onChange((value) => {
-//             if (this.meshes) {
-//                 this.meshes.forEach((mesh) => {
-//                     mesh.material = value ? this.material : mesh.userData.originalMaterial || new THREE.MeshStandardMaterial();
-//                 });
-//             }
-//         });
-//         this.gui.add(this.settings, "animationSpeed", 0, 5, 0.1).name("Animation Speed").onChange((value) => {
-//             if (this.mixer) {
-//                 this.mixer.timeScale = value;
-//             }
-//         });
-//         this.gui.add(this.settings, "pulseSpeed", 0, 10, 0.1).name("Pulse Speed").onChange((value) => {
-//             this.material.uniforms.speed.value = value;
-//         });
-//         this.gui.add(this.settings, "waveWidth", 0, 0.5, 0.01).name("Wave Width").onChange((value) => {
-//             this.material.uniforms.waveWidth.value = value;
-//         });
-//         this.gui.add(this.settings, "numVeins", 1, 20, 1).name("Number of Veins").onChange((value) => {
-//             this.material.uniforms.numVeins.value = value;
-//         });
-//         this.gui.add(this.settings, "whichUV", 0, 2, 1).name("Which UV Set").onChange((value) => {
-//             this.material.uniforms.whichUV.value = value;
-//         });
-//         this.gui.add(this.settings, "invertAlong").name("Invert Along Direction").onChange((value) => {
-//             this.material.uniforms.invertAlong.value = value ? 1.0 : 0.0;
-//         });
-//         this.gui.add(this.settings, "pulseDelay", 0, 5, 0.1).name("Pulse Delay");
-//         this.gui.add(this.settings, "glowStrength", 0, 10, 0.1).name("Glow Strength").onChange((value) => {
-//             this.material.uniforms.glowStrength.value = value;
-//         });
-//     }
-
-//     light() {
-//         const light = new THREE.AmbientLight( 0x404040 ); // soft white light
-//         this.scene.add( light );  
-        
-//         const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-//         this.scene.add( directionalLight );
-//     }
-
-//     addModel() {
-//         this.loader = new GLTFLoader();
-//         this.dracoLoader = new DRACOLoader();
-//         this.dracoLoader.setDecoderPath('./draco/');
-//         this.loader.setDRACOLoader(this.dracoLoader);
-    
-//         let that = this;
-//         this.loader.load(
-//             "/model/heart.glb",
-//             function(gltf) {
-//                 that.model = gltf.scene;
-//                 that.meshes = [];
-    
-//                 console.log("GLTF Animations:", gltf.animations);
-//                 gltf.animations.forEach((clip, index) => {
-//                     console.log(`Animation ${index} Tracks:`, clip.tracks);
-//                     console.log(`Animation ${index} targets:`, clip.tracks.map(track => track.name));
-//                 });
-    
-//                 gltf.scene.traverse(function (child) {
-//                     if (child.isMesh) {
-//                         child.userData.originalMaterial = child.material;
-    
-//                         const box = new THREE.Box3().setFromObject(child);
-//                         const center = box.getCenter(new THREE.Vector3());
-    
-//                         child.position.sub(center);
-//                         child.position.x = 0.25;
-    
-//                         child.scale.set(0.575, 0.575, 0.575);
-    
-//                         child.material = that.material;
-    
-//                         that.meshes.push(child);
-    
-//                         console.log("Mesh:", child.name, "Material:", child.material.name);
-//                         console.log("Mesh has skeleton:", !!child.skeleton, "Skeleton:", child.skeleton);
-//                         console.log("Mesh has morph targets:", !!child.morphTargetInfluences, "Morph targets:", child.morphTargetInfluences);
-//                         console.log("Geometry attributes:", Object.keys(child.geometry.attributes));
-//                     }
-//                 });
-    
-//                 that.mixer = null;
-//                 if (gltf.animations && gltf.animations.length > 0) {
-//                     that.mixer = new THREE.AnimationMixer(gltf.scene);
-//                     gltf.animations.forEach((clip, index) => {
-//                         console.log(`Playing animation ${index}: ${clip.name}`);
-//                         const action = that.mixer.clipAction(clip);
-//                         action.setLoop(THREE.LoopRepeat);
-//                         action.timeScale = that.settings.animationSpeed;
-//                         action.play();
-//                     });
-//                 } else {
-//                     console.warn("No animations found in the model.");
-//                 }
-    
-//                 that.scene.add(gltf.scene);
-//                 that.selectNewVein(); // Initialize the first pulse
-//             },
-//             undefined,
-//             function(e) {
-//                 console.error("Model loading error:", e);
-//             }
-//         );
-//     }
-
-//     material() {
-//         this.material = new THREE.ShaderMaterial({
-//             side: THREE.DoubleSide,
-//             uniforms: {
-//                 time: { value: 0 },
-//                 mouse: { value: 0 },
-//                 resolution: { value: new THREE.Vector4(this.width, this.height, this.width / this.height, 1) },
-//                 uvRate1: { value: new THREE.Vector2(1, 1) },
-//                 currentVein: { value: 0 },
-//                 pulseTime: { value: 0 },
-//                 speed: { value: this.settings.pulseSpeed },
-//                 waveWidth: { value: this.settings.waveWidth },
-//                 numVeins: { value: this.settings.numVeins },
-//                 whichUV: { value: this.settings.whichUV },
-//                 invertAlong: { value: this.settings.invertAlong ? 1.0 : 0.0 },
-//                 glowStrength: { value: this.settings.glowStrength },
-//             },
-//             vertexShader: vertex,
-//             fragmentShader: fragment,
-//             morphTargets: true, // Support morph targets
-//             morphNormals: true, // Support morph normals
-//             skinning: true, // Support skinning
-//             // wireframe: true
-//         });
-//     }
-
-//     selectNewVein() {
-//         this.currentVein = Math.floor(Math.random() * this.settings.numVeins);
-//         this.pulseStartTime = this.time;
-//     }
-
-//     setupResize() {
-//         window.addEventListener("resize", this.resize.bind(this));
-//     }
-
-//     resize() {
-//         this.width = this.container.offsetWidth;
-//         this.height = this.container.offsetHeight;
-//         this.renderer.setSize(this.width, this.height);
-//         this.material.uniforms.resolution.value.set(this.width, this.height, this.width / this.height, 1);
-//         this.camera.aspect = this.width / this.height;
-//         this.camera.updateProjectionMatrix();
-//     }
-
-//     stop() {
-//         this.isPlaying = false;
-//     }
-
-//     play() {
-//         if (!this.isPlaying) {
-//             this.isPlaying = true;
-//             this.render();
-//         }
-//     }
-
-//     render() {
-//         if (!this.isPlaying) return;
-//         const delta = this.clock.getDelta();
-//         this.time += delta;
-    
-//         if (this.mixer) {
-//             this.mixer.update(delta);
-//             console.log("Mixer time:", this.mixer.time);
-//         }
-
-//         // Update impulse effect
-//         const pulseDuration = 1.0 / this.material.uniforms.speed.value;
-//         if (this.time - this.pulseStartTime > pulseDuration + this.settings.pulseDelay) {
-//             this.selectNewVein();
-//         }
-//         this.material.uniforms.pulseTime.value = this.time - this.pulseStartTime;
-//         this.material.uniforms.currentVein.value = this.currentVein;
-//         this.material.uniforms.time.value = this.time;
-    
-//         this.renderer.render(this.scene, this.camera);
-//         requestAnimationFrame(this.render.bind(this));
-//     }
-// }
-
-// new Sketch({
-//     dom: document.querySelector(".canvas"),
-// });
-
-
-
-// import * as THREE from "three";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-// import fragment from "../shaders/fragment.glsl";
-// import vertex from "../shaders/vertex.glsl";
-// import * as dat from "dat.gui";
-// import gsap from "gsap";
-// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-
-// class Sketch {
-//     constructor(options) {
-//         this.scene = new THREE.Scene();
-
-//         this.container = options.dom;
-//         this.width = this.container.offsetWidth;
-//         this.height = this.container.offsetHeight;
-
-//         this.renderer = new THREE.WebGLRenderer({
-//             alpha: true,
-//             antialias: true,
-//         });
-//         this.renderer.setPixelRatio(window.devicePixelRatio);
-//         this.renderer.setSize(this.width, this.height);
-//         this.renderer.setClearColor("#111", 1);
-//         this.renderer.physicallyCorrectLights = true;
-//         this.renderer.outputEncoding = THREE.sRGBEncoding;
-
-//         console.log("WebGL Capabilities:", this.renderer.capabilities);
-
-//         this.container.appendChild(this.renderer.domElement);
-
-//         this.camera = new THREE.PerspectiveCamera(
-//             70,
-//             this.width / this.height,
-//             0.001,
-//             1000
-//         );
-//         this.camera.position.set(0, 0, 2);
-//         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-//         this.time = 0;
-//         this.isPlaying = true;
-//         this.mouse = 0;
-//         this.clock = new THREE.Clock();
-
-//         this.light();
-//         this.material();
-//         this.addModel();
-//         this.resize();
-//         this.setupResize();
-//         this.settings();
-//         this.render();
-//     }
-
-//     light() {
-//         const light = new THREE.AmbientLight(0x404040);
-//         this.scene.add(light);
-
-//         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-//         this.scene.add(directionalLight);
-//     }
-
-//     addModel() {
-//         this.loader = new GLTFLoader();
-//         this.dracoLoader = new DRACOLoader();
-//         this.dracoLoader.setDecoderPath('./draco/');
-//         this.loader.setDRACOLoader(this.dracoLoader);
-
-//         let that = this;
-//         this.loader.load(
-//             "/model/heart.glb",
-//             function(gltf) {
-//                 that.model = gltf.scene;
-//                 that.meshes = [];
-
-//                 console.log("GLTF Animations:", gltf.animations);
-//                 gltf.animations.forEach((clip, index) => {
-//                     console.log(`Animation ${index} Tracks:`, clip.tracks);
-//                     console.log(`Animation ${index} targets:`, clip.tracks.map(track => track.name));
-//                 });
-
-//                 gltf.scene.traverse(function (child) {
-//                     if (child.isMesh) {
-//                         child.userData.originalMaterial = child.material;
-
-//                         const box = new THREE.Box3().setFromObject(child);
-//                         const center = box.getCenter(new THREE.Vector3());
-
-//                         child.position.sub(center);
-//                         child.position.x = 0.25;
-
-//                         child.scale.set(0.575, 0.575, 0.575);
-
-//                         child.material = that.material;
-
-//                         that.meshes.push(child);
-
-//                         console.log("Mesh:", child.name, "Material:", child.material.name);
-//                         console.log("Mesh has skeleton:", !!child.skeleton, "Skeleton:", child.skeleton);
-//                         console.log("Mesh has morph targets:", !!child.morphTargetInfluences, "Morph targets:", child.morphTargetInfluences);
-//                         console.log("Geometry attributes:", Object.keys(child.geometry.attributes));
-//                     }
-//                 });
-
-//                 that.mixer = null;
-//                 if (gltf.animations && gltf.animations.length > 0) {
-//                     that.mixer = new THREE.AnimationMixer(gltf.scene);
-//                     gltf.animations.forEach((clip, index) => {
-//                         console.log(`Playing animation ${index}: ${clip.name}`);
-//                         const action = that.mixer.clipAction(clip);
-//                         action.setLoop(THREE.LoopRepeat);
-//                         action.timeScale = that.settings.animationSpeed;
-//                         action.play();
-//                     });
-//                 } else {
-//                     console.warn("No animations found in the model.");
-//                 }
-
-//                 that.scene.add(gltf.scene);
-//             },
-//             undefined,
-//             function(e) {
-//                 console.error("Model loading error:", e);
-//             }
-//         );
-//     }
-
-//     material() {
-//         this.material = new THREE.ShaderMaterial({
-//             side: THREE.DoubleSide,
-//             uniforms: {
-//                 time: { value: 0 },
-//                 mouse: { value: 0 },
-//                 resolution: { value: new THREE.Vector4(this.width, this.height, this.width / this.height, 1) },
-//                 uvRate1: { value: new THREE.Vector2(1, 1) },
-//                 impulseSpeed: { value: 1.0 },
-//                 impulseIntensity: { value: 1.0 },
-//                 veinIndex: { value: 0 },
-//                 impulseProgress: { value: 0 },
-//                 numVeins: { value: 5 } // Adjust based on actual number of veins
-//             },
-//             vertexShader: vertex,
-//             fragmentShader: fragment,
-//             morphTargets: true,
-//             morphNormals: true,
-//             skinning: true,
-//             wireframe: true
-//         });
-//     }
-
-//     settings() {
-//         this.settings = {
-//             test: 1,
-//             useShaderMaterial: true,
-//             animationSpeed: 1.0,
-//             impulseSpeed: 1.0,
-//             impulseIntensity: 1.0,
-//             impulseInterval: 2.0
-//         };
-//         this.gui = new dat.GUI();
-//         this.gui.add(this.settings, "test", 0, 1, 0.01);
-//         this.gui.add(this.settings, "useShaderMaterial").name("Use Shader Material").onChange((value) => {
-//             if (this.meshes) {
-//                 this.meshes.forEach((mesh) => {
-//                     mesh.material = value ? this.material : mesh.userData.originalMaterial || new THREE.MeshStandardMaterial();
-//                 });
-//             }
-//         });
-//         this.gui.add(this.settings, "animationSpeed", 0, 5, 0.1).name("Animation Speed").onChange((value) => {
-//             if (this.mixer) {
-//                 this.mixer.timeScale = value;
-//             }
-//         });
-//         this.gui.add(this.settings, "impulseSpeed", 0.1, 5, 0.1).name("Impulse Speed").onChange((value) => {
-//             this.material.uniforms.impulseSpeed.value = value;
-//         });
-//         this.gui.add(this.settings, "impulseIntensity", 0, 2, 0.1).name("Glow Intensity").onChange((value) => {
-//             this.material.uniforms.impulseIntensity.value = value;
-//         });
-//         this.gui.add(this.settings, "impulseInterval", 0.5, 5, 0.1).name("Impulse Interval").onChange((value) => {
-//             this.impulseInterval = value;
-//         });
-//     }
-
-//     setupResize() {
-//         window.addEventListener("resize", this.resize.bind(this));
-//     }
-
-//     resize() {
-//         this.width = this.container.offsetWidth;
-//         this.height = this.container.offsetHeight;
-//         this.renderer.setSize(this.width, this.height);
-//         this.material.uniforms.resolution.value.set(this.width, this.height, this.width / this.height, 1);
-//         this.camera.aspect = this.width / this.height;
-//         this.camera.updateProjectionMatrix();
-//     }
-
-//     stop() {
-//         this.isPlaying = false;
-//     }
-
-//     play() {
-//         if (!this.isPlaying) {
-//             this.isPlaying = true;
-//             this.render();
-//         }
-//     }
-
-//     updateImpulse() {
-//         const interval = this.settings.impulseInterval;
-//         const progress = (this.time % interval) / interval;
-//         this.material.uniforms.impulseProgress.value = progress;
-//         if (progress < 0.01) { // Reset at the start of each cycle
-//             const newVeinIndex = Math.floor(Math.random() * this.material.uniforms.numVeins.value);
-//             this.material.uniforms.veinIndex.value = newVeinIndex;
-//         }
-//     }
-
-//     render() {
-//         if (!this.isPlaying) return;
-//         const delta = this.clock.getDelta();
-//         this.time += delta;
-
-//         this.material.uniforms.time.value = this.time;
-//         this.updateImpulse();
-
-//         if (this.mixer) {
-//             this.mixer.update(delta);
-//             console.log("Mixer time:", this.mixer.time);
-//         }
-
-//         this.renderer.render(this.scene, this.camera);
-//         requestAnimationFrame(this.render.bind(this));
-//     }
-// }
-
-// new Sketch({
-//     dom: document.querySelector(".canvas"),
-// });
